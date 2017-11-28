@@ -11,3 +11,5 @@ static/.DS_Store
 virtualenv
 .idea
 venv
+.noseids
+.coverage
