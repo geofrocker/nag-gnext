@@ -65,3 +65,7 @@ class AddChannelTestCase(BaseTestCase):
         self.client.login(username="alice@example.org", password="password")
         response = self.client.post(url, form)
         self.assertEqual(response.status_code, 400)
+
+        url = '/integrations/add_whatsApp'
+        resp = self.client.post(url)
+        self.assertEqual(resp.status_code, 404)
