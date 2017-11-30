@@ -57,3 +57,11 @@ class AddChannelTestCase(BaseTestCase):
         self.assertContains(resp, alice_integrations.first().code)
         self.assertIn(str(alice_integrations.first().code), str(resp.content))
         self.client.logout()
+
+    def test_that_bad_kinds_do_not_work(self):
+        form = {"kind": "WhatsApp", "value": "alice@example.org"}
+
+        url = "/integrations/add/"
+        self.client.login(username="alice@example.org", password="password")
+        response = self.client.post(url, form)
+        self.assertEqual(response.status_code, 400)
