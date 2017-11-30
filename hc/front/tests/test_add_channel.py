@@ -37,5 +37,23 @@ class AddChannelTestCase(BaseTestCase):
             r = self.client.get(url)
             self.assertContains(r, "Integration Settings", status_code=200)
 
-    ### Test that the team access works
-    ### Test that bad kinds don't work
+    def test_team_access_works(self):
+        url = "/integrations/add/"
+        form = {"kind": "email", "value": "alice@example.org"}
+
+        self.client.login(username="alice@example.org", password="password")
+        r = self.client.post(url, form)
+
+        self.assertRedirects(r, "/integrations/")
+        alice_integrations = Channel.objects.filter(user=self.alice)
+        self.client.logout()
+
+        self.client.login(username="bob@example.org", password="password")
+
+        resp = self.client.get("/integrations/")
+
+        # UUID of alice's check present in the URL
+        self.assertContains(resp, alice_integrations.first().code)
+        self.assertContains(resp, alice_integrations.first().code)
+        self.assertIn(str(alice_integrations.first().code), str(resp.content))
+        self.client.logout()
