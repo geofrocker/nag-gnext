@@ -11,7 +11,7 @@ class LoginTestCase(TestCase):
         self.url = reverse('hc-login')
         self.check = Check()
         self.form = {"email": "alice@example.org"}
-        self.wrong_cridentials = {"email": "wrong@email.com", "password": "wrongpassword"}
+        self.wrong_credentials = {"email": "wrong@email.com", "password": "wrongpassword"}
         
     def test_it_sends_link(self):
         self.check.save()
@@ -54,14 +54,14 @@ class LoginTestCase(TestCase):
         self.assertRedirects(r, reverse('hc-login-link-sent'))
 
     def test_login_with_incorrect_password(self):
-        r = self.client.post(self.url, self.wrong_cridentials)
+        r = self.client.post(self.url, self.wrong_credentials)
         # bad_credentials should be True in the context
         self.assertTrue(r.context['bad_credentials'] is True)
         self.assertContains(r, 'Incorrect email or password')
 
         # assert no such user exists in the database at all.
         with self.assertRaises(User.DoesNotExist):
-            User.objects.get(email=self.wrong_cridentials["email"])
+            User.objects.get(email=self.wrong_credentials["email"])
 
     def test_login_link_cannot_be_used_twice(self):
         r = self.client.post(self.url, self.form)
