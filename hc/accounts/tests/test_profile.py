@@ -18,8 +18,17 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
         ### Assert that the token is set
+        self.assertIsNotNone(token)
+        self.assertTrue(len(token) > 0)
 
         ### Assert that the email was sent and check email content
+        self.assertIn('set_password_link', r.context)
+
+        link = r.context['set_password_link']
+        outbox = mail.outbox
+
+        self.assertTrue(len(outbox) > 0)
+        self.assertIn(link, outbox[0].body)
 
     def test_it_sends_report(self):
         check = Check(name="Test Check", user=self.alice)
