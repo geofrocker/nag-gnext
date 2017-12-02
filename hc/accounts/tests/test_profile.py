@@ -1,4 +1,5 @@
 from django.core import mail
+from django.core.urlresolvers import reverse
 
 from hc.test import BaseTestCase
 from hc.accounts.models import Member
@@ -132,3 +133,27 @@ class ProfileTestCase(BaseTestCase):
         self.assertNotContains(r, "bobs-tag.svg")
 
     ### Test it creates and revokes API key
+    def test_it_creates_and_revoke_api(self):
+        # login charlie.
+        self.client.login(username=self.charlie.email, password='password')
+        form = {'create_api_key': "1"}
+
+        response = self.client.post(reverse('hc-profile'), form)
+
+        # assert API key is created.
+        self.assertIs(response.status_code, 200)
+        self.assertContains(response, "The API key has been created!")
+
+        self.charlie.profile.refresh_from_db()
+
+        # # check API key now actually exists in Charlie profile.
+        self.assertIsNot(self.charlie.profile.api_key, "")
+
+        # revoke API key.
+        form = {'revoke_api_key': "1"}
+        response = self.client.post(reverse('hc-profile'), form)
+
+        self.charlie.profile.refresh_from_db()
+
+        self.assertContains(response, 'The API key has been revoked!')
+        self.assertTrue(self.charlie.profile.api_key == "")
