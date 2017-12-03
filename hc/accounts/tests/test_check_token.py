@@ -9,7 +9,7 @@ class CheckTokenTestCase(BaseTestCase):
         super(CheckTokenTestCase, self).setUp()
         self.profile.token = make_password("secret-token")
         self.profile.save()
-        self.url = reverse('hc-check-token', args=('alice', 'secret-token') )
+        self.url = reverse('hc-check-token', args=('alice', 'secret-token'))
 
     def test_it_shows_form(self):
         r = self.client.get(self.url)
