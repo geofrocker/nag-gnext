@@ -1,4 +1,5 @@
 from django.core import mail
+from django.core.urlresolvers import reverse
 
 from hc.test import BaseTestCase
 from hc.accounts.models import Member
@@ -35,8 +36,13 @@ class ProfileTestCase(BaseTestCase):
         check.save()
 
         self.alice.profile.send_report()
-
         ###Assert that the email was sent and check email content
+
+        outbox = mail.outbox
+
+        self.assertTrue(len(outbox) > 0)
+        self.assertIsNot(outbox[0].body, "")  # should not be empty.
+        self.assertIn('This is a monthly report sent by healthchecks.io.', outbox[0].body)
 
     def test_it_adds_team_member(self):
         self.client.login(username="alice@example.org", password="password")
@@ -50,10 +56,20 @@ class ProfileTestCase(BaseTestCase):
             member_emails.add(member.user.email)
 
         ### Assert the existence of the member emails
+        self.assertGreater(len(member_emails), 0)
 
         self.assertTrue("frank@example.org" in member_emails)
 
         ###Assert that the email was sent and check email content
+        # expected subject message.
+        subject = 'You have been invited to join ' \
+                  '%(email)s on healthchecks.io' % dict(email=self.alice.email)
+        outbox = mail.outbox
+
+        self.assertGreater(len(outbox), 0)
+        self.assertTrue(
+            outbox[0].subject == subject)
+        self.assertIn(self.alice.email, outbox[0].body)
 
     def test_add_team_member_checks_team_access_allowed_flag(self):
         self.client.login(username="charlie@example.org", password="password")
@@ -117,3 +133,27 @@ class ProfileTestCase(BaseTestCase):
         self.assertNotContains(r, "bobs-tag.svg")
 
     ### Test it creates and revokes API key
+    def test_it_creates_and_revoke_api(self):
+        # login charlie.
+        self.client.login(username=self.charlie.email, password='password')
+        form = {'create_api_key': "1"}
+
+        response = self.client.post(reverse('hc-profile'), form)
+
+        # assert API key is created.
+        self.assertIs(response.status_code, 200)
+        self.assertContains(response, "The API key has been created!")
+
+        self.charlie.profile.refresh_from_db()
+
+        # # check API key now actually exists in Charlie profile.
+        self.assertIsNot(self.charlie.profile.api_key, "")
+
+        # revoke API key.
+        form = {'revoke_api_key': "1"}
+        response = self.client.post(reverse('hc-profile'), form)
+
+        self.charlie.profile.refresh_from_db()
+
+        self.assertContains(response, 'The API key has been revoked!')
+        self.assertTrue(self.charlie.profile.api_key == "")
