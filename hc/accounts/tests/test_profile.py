@@ -8,7 +8,7 @@ from hc.api.models import Check
 
 class ProfileTestCase(BaseTestCase):
 
-    def test_it_sends_set_password_link(self):
+    def test_set_password_link_is_sent(self):
         """
         Test set password link is sent to user email.
         """
@@ -36,7 +36,7 @@ class ProfileTestCase(BaseTestCase):
         self.assertGreater(len(outbox), 0)
         self.assertIn(link, outbox[0].body)
 
-    def test_it_sends_report(self):
+    def test_report_is_sent(self):
         """
         Test check report is sent user via email.
         """
@@ -55,7 +55,7 @@ class ProfileTestCase(BaseTestCase):
             'This is a monthly report sent by healthchecks.io.',
             outbox[0].body)
 
-    def test_it_adds_team_member(self):
+    def test_team_member_is_added(self):
         """
         Test user is added to created team via an invite.
         """
@@ -97,7 +97,7 @@ class ProfileTestCase(BaseTestCase):
         r = self.client.post("/accounts/profile/", form)
         assert r.status_code == 403
 
-    def test_it_removes_team_member(self):
+    def test_team_member_member_is_removed(self):
         """
         Test team owners can remove team members.
         """

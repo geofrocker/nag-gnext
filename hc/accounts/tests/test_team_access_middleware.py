@@ -5,7 +5,7 @@ from hc.accounts.models import Profile
 
 class TeamAccessMiddlewareTestCase(TestCase):
 
-    def test_it_handles_missing_profile(self):
+    def test_team_access_middleware_handles_missing_profile(self):
         """
         Test user profile is created back if deleted or removed.
         """

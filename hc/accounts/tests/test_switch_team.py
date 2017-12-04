@@ -9,7 +9,7 @@ class SwitchTeamTestCase(BaseTestCase):
         super(SwitchTeamTestCase, self).setUp()
         self.url = reverse("hc-switch-team", args=(self.alice.username, ))
 
-    def test_it_switches(self):
+    def test_user_can_switch_team(self):
         """
             Test user can switch teams.
 
@@ -27,7 +27,7 @@ class SwitchTeamTestCase(BaseTestCase):
         # Todo Assert the contents of response
         self.assertRedirects(response, reverse("hc-checks"))
 
-    def test_it_checks_team_membership(self):
+    def test_checks_team_membership(self):
         """
             Test switch team only works for users who are members for a team.
 
@@ -40,12 +40,12 @@ class SwitchTeamTestCase(BaseTestCase):
         # Todo Assert the expected error code
         self.assertEqual(response.status_code, 403)
 
-    def test_it_switches_to_own_team(self):
+    def test_user_can_switch_to_own_team(self):
         """
-            Test that an owner of a team can succesfully switch to that team.
+            Test that an owner of a team can successfully switch to that team.
 
             Alice owns a team, which she is trying to switch to.
-            This asserst that no error code is returned to her.
+            This asserts that no error code is returned to her.
         """
         self.client.login(username="alice@example.org", password="password")
 
