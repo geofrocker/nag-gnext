@@ -6,6 +6,10 @@ from hc.accounts.models import Profile
 class TeamAccessMiddlewareTestCase(TestCase):
 
     def test_it_handles_missing_profile(self):
+        """
+        Test user profile is created back if deleted or removed.
+        """
+
         user = User(username="ned", email="ned@example.org")
         user.set_password("password")
         user.save()

@@ -127,7 +127,7 @@ class ProfileTestCase(BaseTestCase):
 
     def test_set_team_name_checks_team_access_allowed_flag(self):
         """
-        Test only team members can set team name.
+        Test team name can only be set with users with team access privilege.
         """
 
         self.client.login(username="charlie@example.org", password="password")
@@ -138,8 +138,9 @@ class ProfileTestCase(BaseTestCase):
 
     def test_it_switches_to_own_team(self):
         """
-        Test
+        Test user's team is switched to default.
         """
+
         self.client.login(username="bob@example.org", password="password")
 
         self.client.get("/accounts/profile/")
@@ -149,6 +150,10 @@ class ProfileTestCase(BaseTestCase):
         self.assertEqual(self.bobs_profile.current_team, self.bobs_profile)
 
     def test_it_shows_badges(self):
+        """
+        Test users should be able to see badges.
+        """
+
         self.client.login(username="alice@example.org", password="password")
         Check.objects.create(user=self.alice, tags="foo a-B_1  baz@")
         Check.objects.create(user=self.bob, tags="bobs-tag")
@@ -164,7 +169,11 @@ class ProfileTestCase(BaseTestCase):
         self.assertNotContains(r, "bobs-tag.svg")
 
     ### Test it creates and revokes API key
-    def test_it_creates_and_revoke_api(self):  # name
+    def test_user_can_create_and_revoke_api(self):
+        """
+        Test user should be able to create and revoke API keys
+        """
+
         # login charlie.
         self.client.login(username=self.charlie.email, password='password')
         form = {'create_api_key': "1"}
