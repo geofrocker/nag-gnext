@@ -23,11 +23,11 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
 
-        ### Assert that the token is set
+        # Todo Assert that the token is set
         self.assertIsNotNone(token)
         self.assertGreater(len(token), 0)
 
-        ### Assert that the email was sent and check email content
+        # Todo Assert that the email was sent and check email content
         self.assertIn('set_password_link', r.context)
 
         link = r.context['set_password_link']
@@ -46,12 +46,14 @@ class ProfileTestCase(BaseTestCase):
 
         self.alice.profile.send_report()
 
-        ### Assert that the email was sent and check email content
+        # Todo Assert that the email was sent and check email content
         outbox = mail.outbox
 
         self.assertGreater(len(outbox), 0)
         self.assertIsNot(outbox[0].body, "")  # should not be empty.
-        self.assertIn('This is a monthly report sent by healthchecks.io.', outbox[0].body)
+        self.assertIn(
+            'This is a monthly report sent by healthchecks.io.',
+            outbox[0].body)
 
     def test_it_adds_team_member(self):
         """
@@ -68,12 +70,12 @@ class ProfileTestCase(BaseTestCase):
         for member in self.alice.profile.member_set.all():
             member_emails.add(member.user.email)
 
-        ### Assert the existence of the member emails
+        # Todo Assert the existence of the member emails
         self.assertGreater(len(member_emails), 0)
 
         self.assertTrue("frank@example.org" in member_emails)
 
-        ###Assert that the email was sent and check email content
+        # Todo Assert that the email was sent and check email content
         # expected subject message.
         subject = 'You have been invited to join ' \
                   '%(email)s on healthchecks.io' % dict(email=self.alice.email)
@@ -127,7 +129,7 @@ class ProfileTestCase(BaseTestCase):
 
     def test_set_team_name_checks_team_access_allowed_flag(self):
         """
-        Test only team members can set team name.
+        Test team name can only be set with users with team access privilege.
         """
 
         self.client.login(username="charlie@example.org", password="password")
@@ -138,8 +140,9 @@ class ProfileTestCase(BaseTestCase):
 
     def test_it_switches_to_own_team(self):
         """
-        Test
+        Test user's team is switched to default.
         """
+
         self.client.login(username="bob@example.org", password="password")
 
         self.client.get("/accounts/profile/")
@@ -149,6 +152,10 @@ class ProfileTestCase(BaseTestCase):
         self.assertEqual(self.bobs_profile.current_team, self.bobs_profile)
 
     def test_it_shows_badges(self):
+        """
+        Test users should be able to see badges.
+        """
+
         self.client.login(username="alice@example.org", password="password")
         Check.objects.create(user=self.alice, tags="foo a-B_1  baz@")
         Check.objects.create(user=self.bob, tags="bobs-tag")
@@ -163,8 +170,12 @@ class ProfileTestCase(BaseTestCase):
         # Expect only Alice's tags
         self.assertNotContains(r, "bobs-tag.svg")
 
-    ### Test it creates and revokes API key
-    def test_it_creates_and_revoke_api(self):  # name
+    # Todo Test it creates and revokes API key
+    def test_user_can_create_and_revoke_api(self):
+        """
+        Test user should be able to create and revoke API keys.
+        """
+
         # login charlie.
         self.client.login(username=self.charlie.email, password='password')
         form = {'create_api_key': "1"}

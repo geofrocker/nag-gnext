@@ -6,6 +6,10 @@ from hc.accounts.models import Profile
 class TeamAccessMiddlewareTestCase(TestCase):
 
     def test_it_handles_missing_profile(self):
+        """
+        Test user profile is created back if deleted or removed.
+        """
+
         user = User(username="ned", email="ned@example.org")
         user.set_password("password")
         user.save()
@@ -14,7 +18,7 @@ class TeamAccessMiddlewareTestCase(TestCase):
         r = self.client.get("/about/")
         self.assertEqual(r.status_code, 200)
 
-        ### Assert the new Profile objects count
+        # Todo Assert the new Profile objects count
         # delete user profile instance.
         user.profile.delete()
         prev_count = Profile.objects.count()
@@ -25,5 +29,3 @@ class TeamAccessMiddlewareTestCase(TestCase):
         curr_count = Profile.objects.count()
 
         self.assertGreater(curr_count, prev_count)
-
-
