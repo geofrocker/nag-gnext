@@ -266,11 +266,11 @@ def switch_team(request, target_username):
     # Superuser can switch to any team.
     access_ok = request.user.is_superuser
 
-    # Users can switch to teams they are members of.
+    # Users can switch to their own teams.
     if not access_ok and other_user.id == request.user.id:
         access_ok = True
 
-    # Users can switch to their own teams.
+    # Users can switch to teams they are members of.
     if not access_ok:
         for membership in request.user.member_set.all():
             if membership.team.user.id == other_user.id:
