@@ -13,5 +13,6 @@ addons:
   postgresql: "9.4"
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
+  - pep8 --show-source --show-pep8 hc/accounts/tests/
 after_success: coveralls
 cache: pip

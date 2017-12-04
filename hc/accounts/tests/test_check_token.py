@@ -36,10 +36,11 @@ class CheckTokenTestCase(BaseTestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.token, "")
 
-    ### Login and test it redirects already logged in
+    # Todo: Login and test it redirects already logged in
     def test_login_redirects_to_checks(self):
         """
-            Test user is only redirected to checks only once they have logged in.
+            Test user is only redirected to checks only once they have
+            logged in.
 
             Alice is redirected to HTML form before login.
             On login, Alice is successfully redirected to hc-checks.
@@ -56,7 +57,7 @@ class CheckTokenTestCase(BaseTestCase):
         self.assertRedirects(response, reverse('hc-checks'))
         self.assertEqual(response.status_code, 302)
 
-    ### Login with a bad token and check that it redirects
+    # Todo: Login with a bad token and check that it redirects
     def test_bad_token_redirects(self):
         """
             Test a user is redirected to login when they supply a wrong token.
@@ -65,7 +66,8 @@ class CheckTokenTestCase(BaseTestCase):
             Alice is redirected to login.
         """
         response = self.client.post(reverse('hc-check-token',
-                                            args=('alice', 'bad_token')), follow=True)
+                                            args=('alice', 'bad_token')),
+                                    follow=True)
         self.assertRedirects(response, reverse('hc-login'))
 
-    ### Any other tests?
+    # Todo: Any other tests?

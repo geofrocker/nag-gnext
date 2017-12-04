@@ -11,8 +11,17 @@ class LoginTestCase(TestCase):
         self.url = reverse('hc-login')
         self.check = Check()
         self.form = {"email": "alice@example.org"}
-        self.wrong_credentials = {"email": "wrong@email.com", "password": "wrongpassword"}
-        
+        self.wrong_credentials = {
+            "email": "alice@example.org",
+            "password": "wrong-password"
+            }
+
+    def create_user(self):
+        """helper method to create user"""
+        alice = User(username="alice", email="alice@example.org")
+        alice.set_password("password")
+        alice.save()
+
     def test_it_sends_link(self):
         """
         Test login link is sent after login.
@@ -25,19 +34,19 @@ class LoginTestCase(TestCase):
         response = self.client.post(self.url, self.form)
         assert response.status_code == 302
 
-        ### Assert that a user was created
+        # Todo Assert that a user was created
         self.assertEqual(User.objects.count(), 1)
 
         # And email sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Log in to healthchecks.io')
 
-        ### Assert contents of the email body
+        # Todo Assert contents of the email body
         created_user = User.objects.first()
         self.assertGreater(len(mail.outbox[0].body), 0)
         self.assertIn(created_user.username, mail.outbox[0].body)
 
-        ### Assert that check is associated with the new user
+        # Todo Assert that check is associated with the new user
         check_user = Check.objects.first().user
         self.assertEqual(check_user.username, created_user.username)
 
@@ -50,33 +59,35 @@ class LoginTestCase(TestCase):
         self.client.get(self.url)
         assert "bad_link" not in self.client.session
 
-        ### Any other tests?
+        # Todo Any other tests?
     def test_login_returns_form_for_get(self):
         """
         Test rendered form is correct.
         """
 
-        r = self.client.get(self.url)
+        response = self.client.get(self.url)
         self.assertTemplateUsed('accounts/login.html')
-        self.assertEqual(EmailPasswordForm, r.context['form'].__class__)
+        self.assertEqual(EmailPasswordForm, response.context['form'].__class__)
 
     def test_redirect_with_successful_login(self):
         """
         Test user is redirected to checks page on successful login.
         """
 
-        r = self.client.post(self.url, self.form, follow=True)
-        self.assertRedirects(r, reverse('hc-login-link-sent'))
+        response = self.client.post(self.url, self.form, follow=True)
+        self.assertRedirects(response, reverse('hc-login-link-sent'))
 
     def test_login_with_incorrect_password(self):
         """
-        Test error message is rendered when user supplies incorrect login credentials.
+        Test error message is shown when user supplies incorrect
+        login credentials.
         """
-
-        r = self.client.post(self.url, self.wrong_credentials)
+        # create user
+        self.create_user()
+        response = self.client.post(self.url, self.wrong_credentials)
         # bad_credentials should be True in the context
-        self.assertTrue(r.context['bad_credentials'] is True)
-        self.assertContains(r, 'Incorrect email or password')
+        self.assertTrue(response.context['bad_credentials'] is True)
+        self.assertContains(response, 'Incorrect email or password')
 
         # assert no such user exists in the database at all.
         with self.assertRaises(User.DoesNotExist):
@@ -87,8 +98,8 @@ class LoginTestCase(TestCase):
         Test user should use login link only once.
         """
 
-        r = self.client.post(self.url, self.form)
-        login_link = r.context['login_link']
+        response = self.client.post(self.url, self.form)
+        login_link = response.context['login_link']
 
         # make first request.
         self.client.post(login_link)
@@ -97,5 +108,18 @@ class LoginTestCase(TestCase):
         self.client.get(reverse('hc-logout'))
 
         # login again with the same login link.
-        r = self.client.post(login_link)
-        self.assertRedirects(r, reverse('hc-login'))
+        response = self.client.post(login_link)
+        self.assertRedirects(response, reverse('hc-login'))
+
+    def test_login_with_password(self):
+        """
+            Test login with email and password supplied in EmailForm
+        """
+        # create user
+        self.create_user()
+        # login with correct password
+        response = self.client.post(
+            self.url,
+            {"email": "alice@example.org", "password": "password"},
+            follow=True)
+        self.assertRedirects(response, reverse('hc-checks'))

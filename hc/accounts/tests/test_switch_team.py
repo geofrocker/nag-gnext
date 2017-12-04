@@ -2,6 +2,7 @@ from hc.test import BaseTestCase
 from hc.api.models import Check
 from django.urls import reverse
 
+
 class SwitchTeamTestCase(BaseTestCase):
 
     def setUp(self):
@@ -11,8 +12,9 @@ class SwitchTeamTestCase(BaseTestCase):
     def test_it_switches(self):
         """
             Test user can switch teams.
-            
-            Bob is a member of Alice's team, he is trying to swith to that team.
+
+            Bob is a member of Alice's team,
+            he is trying to swith to that team.
             Asserts that he is successfully redirected to hc-checks.
         """
         check = Check(user=self.alice, name="This belongs to Alice")
@@ -22,7 +24,7 @@ class SwitchTeamTestCase(BaseTestCase):
 
         response = self.client.get(self.url, follow=True)
 
-        ### Assert the contents of response
+        # Todo Assert the contents of response
         self.assertRedirects(response, reverse("hc-checks"))
 
     def test_it_checks_team_membership(self):
@@ -35,7 +37,7 @@ class SwitchTeamTestCase(BaseTestCase):
         self.client.login(username="charlie@example.org", password="password")
 
         response = self.client.get(self.url)
-        ### Assert the expected error code
+        # Todo Assert the expected error code
         self.assertEqual(response.status_code, 403)
 
     def test_it_switches_to_own_team(self):
@@ -49,5 +51,5 @@ class SwitchTeamTestCase(BaseTestCase):
 
         response = self.client.get(self.url, follow=True)
 
-        ### Assert the expected error code
+        # Todo Assert the expected error code
         self.assertNotEqual(response.status_code, 403)
