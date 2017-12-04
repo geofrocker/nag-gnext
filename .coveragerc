@@ -4,3 +4,9 @@
     */site-packages/nose/*
     *__init__*
     *migrations*
+    */manage.py
+    */test*.py
+    */urls.py
+    */admin.py
+    */local_settings.py
+    */settings.py
