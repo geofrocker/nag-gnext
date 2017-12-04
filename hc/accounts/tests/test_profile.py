@@ -23,11 +23,11 @@ class ProfileTestCase(BaseTestCase):
         self.alice.profile.refresh_from_db()
         token = self.alice.profile.token
 
-        ### Assert that the token is set
+        # Todo Assert that the token is set
         self.assertIsNotNone(token)
         self.assertGreater(len(token), 0)
 
-        ### Assert that the email was sent and check email content
+        # Todo Assert that the email was sent and check email content
         self.assertIn('set_password_link', r.context)
 
         link = r.context['set_password_link']
@@ -46,12 +46,14 @@ class ProfileTestCase(BaseTestCase):
 
         self.alice.profile.send_report()
 
-        ### Assert that the email was sent and check email content
+        # Todo Assert that the email was sent and check email content
         outbox = mail.outbox
 
         self.assertGreater(len(outbox), 0)
         self.assertIsNot(outbox[0].body, "")  # should not be empty.
-        self.assertIn('This is a monthly report sent by healthchecks.io.', outbox[0].body)
+        self.assertIn(
+            'This is a monthly report sent by healthchecks.io.',
+            outbox[0].body)
 
     def test_it_adds_team_member(self):
         """
@@ -68,12 +70,12 @@ class ProfileTestCase(BaseTestCase):
         for member in self.alice.profile.member_set.all():
             member_emails.add(member.user.email)
 
-        ### Assert the existence of the member emails
+        # Todo Assert the existence of the member emails
         self.assertGreater(len(member_emails), 0)
 
         self.assertTrue("frank@example.org" in member_emails)
 
-        ###Assert that the email was sent and check email content
+        # Todo Assert that the email was sent and check email content
         # expected subject message.
         subject = 'You have been invited to join ' \
                   '%(email)s on healthchecks.io' % dict(email=self.alice.email)
@@ -168,10 +170,10 @@ class ProfileTestCase(BaseTestCase):
         # Expect only Alice's tags
         self.assertNotContains(r, "bobs-tag.svg")
 
-    ### Test it creates and revokes API key
+    # Todo Test it creates and revokes API key
     def test_user_can_create_and_revoke_api(self):
         """
-        Test user should be able to create and revoke API keys
+        Test user should be able to create and revoke API keys.
         """
 
         # login charlie.
