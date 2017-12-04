@@ -11,10 +11,6 @@ class LoginTestCase(TestCase):
         self.url = reverse('hc-login')
         self.check = Check()
         self.form = {"email": "alice@example.org"}
-        self.wrong_credentials = {
-            "email": "alice@example.org",
-            "password": "wrong-password"
-            }
 
     def create_user(self):
         """helper method to create user"""
@@ -84,14 +80,17 @@ class LoginTestCase(TestCase):
         """
         # create user
         self.create_user()
-        response = self.client.post(self.url, self.wrong_credentials)
+        response = self.client.post(self.url, {
+            "email": "alice@example.org",
+            "password": "wrong-password"
+            })
         # bad_credentials should be True in the context
         self.assertTrue(response.context['bad_credentials'] is True)
         self.assertContains(response, 'Incorrect email or password')
 
         # assert no such user exists in the database at all.
         with self.assertRaises(User.DoesNotExist):
-            User.objects.get(email=self.wrong_credentials["email"])
+            User.objects.get(email="email@email.com")
 
     def test_login_link_cannot_be_used_twice(self):
         """
