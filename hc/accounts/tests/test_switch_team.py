@@ -9,27 +9,45 @@ class SwitchTeamTestCase(BaseTestCase):
         self.url = reverse("hc-switch-team", args=(self.alice.username, ))
 
     def test_it_switches(self):
-        c = Check(user=self.alice, name="This belongs to Alice")
-        c.save()
+        """
+            Test user can switch teams.
+            
+            Bob is a member of Alice's team, he is trying to swith to that team.
+            Asserts that he is successfully redirected to hc-checks.
+        """
+        check = Check(user=self.alice, name="This belongs to Alice")
+        check.save()
 
         self.client.login(username="bob@example.org", password="password")
 
-        r = self.client.get(self.url, follow=True)
+        response = self.client.get(self.url, follow=True)
 
-        ### Assert the contents of r
-        self.assertRedirects(r, reverse("hc-checks"))
+        ### Assert the contents of response
+        self.assertRedirects(response, reverse("hc-checks"))
 
     def test_it_checks_team_membership(self):
+        """
+            Test switch team only works for users who are members for a team.
+
+            Charlie is not a member of Alice's team but he is trying to switch to it.
+            This asserts that an error code is returned.
+        """
         self.client.login(username="charlie@example.org", password="password")
 
-        r = self.client.get(self.url)
+        response = self.client.get(self.url)
         ### Assert the expected error code
-        assert r.status_code == 403
+        self.assertEqual(response.status_code, 403)
 
     def test_it_switches_to_own_team(self):
+        """
+            Test that an owner of a team can succesfully switch to that team.
+
+            Alice owns a team, which she is trying to switch to.
+            This asserst that no error code is returned to her.
+        """
         self.client.login(username="alice@example.org", password="password")
 
-        r = self.client.get(self.url, follow=True)
-        
+        response = self.client.get(self.url, follow=True)
+
         ### Assert the expected error code
-        assert r.status_code != 403
+        self.assertNotEqual(response.status_code, 403)
