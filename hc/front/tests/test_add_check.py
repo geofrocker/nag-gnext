@@ -10,11 +10,16 @@ class AddCheckTestCase(BaseTestCase):
         self.assertRedirects(r, "/checks/")
         assert Check.objects.count() == 1
 
-    def test_team_access_works(self):
+    def test_team_access(self):
+        """ Tests if a check can be viewed by members on a
+         team where by one member has team_access.
+        """
+
         url = "/checks/add/"
 
         self.client.login(username="alice@example.org", password="password")
-        resp = self.client.post(url)  # creates an unnamed check on the Alice profile
+        # creates an unnamed check on the Alice profile
+        resp = self.client.post(url)
         self.assertRedirects(resp, "/checks/")
         alice_checks = Check.objects.filter(user=self.alice)
         self.client.logout()  # destroy the current session
@@ -25,7 +30,8 @@ class AddCheckTestCase(BaseTestCase):
         self.client.login(username="bob@example.org", password="password")
 
         resp = self.client.get("/checks/")
-        self.assertContains(resp, alice_checks.first().code)  # UUID of alice's check present in the URL
+        # UUID of alice's check present in the URL
+        self.assertContains(resp, alice_checks.first().code)
         self.assertIn(str(alice_checks.first().code), str(resp.content))
         self.client.logout()
 

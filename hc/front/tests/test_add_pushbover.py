@@ -38,15 +38,18 @@ class AddPushoverTestCase(BaseTestCase):
         assert r.status_code == 403
 
     def test_pushover_validates_priority(self):
+        """ A valid priority has a value between -2 and 2 both inclusive.
+            using a value outside this range can indicate to us whether 
+            pushover validates priority or not.
+
+            Priority 40 is non-existent so it is utilised here to show 
+            that invalid priorities don't work. 
+        """
         self.client.login(username="alice@example.org", password="password")
 
         session = self.client.session
         session["po_nonce"] = "n"
         session.save()
-
-        # A valid priority has a value between -2 and 2 both inclusive
-        # using a value outside this range can indicate to us whether pushover
-        # validates priority or not
-        params = "pushover_user_key=a&nonce=n&prio=40"  # priority 40 is non-existent
-        r = self.client.get("/integrations/add_pushover/?%s" % params)
-        self.assertEqual(r.status_code, 400)
+        params = "pushover_user_key=a&nonce=n&prio=40"
+        resp = self.client.get("/integrations/add_pushover/?%s" % params)
+        self.assertEqual(resp.status_code, 400)

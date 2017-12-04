@@ -37,7 +37,10 @@ class AddChannelTestCase(BaseTestCase):
             r = self.client.get(url)
             self.assertContains(r, "Integration Settings", status_code=200)
 
-    def test_team_access_works(self):
+    def test_team_access(self):
+        """ Tests if a check can be viewed by members on a
+            team where by one member has team_access.
+        """
         url = "/integrations/add/"
         form = {"kind": "email", "value": "alice@example.org"}
 
@@ -45,7 +48,7 @@ class AddChannelTestCase(BaseTestCase):
         r = self.client.post(url, form)
 
         self.assertRedirects(r, "/integrations/")
-        alice_integrations = Channel.objects.filter(user=self.alice)
+        alice_channels = Channel.objects.filter(user=self.alice)
         self.client.logout()
 
         self.client.login(username="bob@example.org", password="password")
@@ -53,12 +56,11 @@ class AddChannelTestCase(BaseTestCase):
         resp = self.client.get("/integrations/")
 
         # UUID of alice's check present in the URL
-        self.assertContains(resp, alice_integrations.first().code)
-        self.assertContains(resp, alice_integrations.first().code)
-        self.assertIn(str(alice_integrations.first().code), str(resp.content))
+        self.assertContains(resp, alice_channels.first().code)
+        self.assertIn(str(alice_channels.first().code), str(resp.content))
         self.client.logout()
 
-    def test_that_bad_kinds_do_not_work(self):
+    def test_unknown_channels_cannot_work(self):
         form = {"kind": "WhatsApp", "value": "alice@example.org"}
 
         url = "/integrations/add/"
