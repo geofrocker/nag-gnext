@@ -19,8 +19,8 @@ class LoginTestCase(TestCase):
         session["welcome_code"] = str(self.check.code)
         session.save()
 
-        r = self.client.post(self.url, self.form)
-        assert r.status_code == 302
+        response = self.client.post(self.url, self.form)
+        assert response.status_code == 302
 
         ### Assert that a user was created
         self.assertEqual(User.objects.count(), 1)
