@@ -10,29 +10,24 @@ class ChannelChecksTestCase(BaseTestCase):
         self.channel.value = "alice@example.org"
         self.channel.save()
 
-    def test_it_works(self):
-        url = "/integrations/%s/checks/" % self.channel.code
+        self.url = "/integrations/%s/checks/" % self.channel.code
 
+    def test_it_works(self):
         self.client.login(username="alice@example.org", password="password")
-        r = self.client.get(url)
+        r = self.client.get(self.url)
         self.assertContains(r, "Assign Checks to Channel", status_code=200)
 
     def test_team_access_works(self):
-        url = "/integrations/%s/checks/" % self.channel.code
-
-        # Logging in as bob, not alice. Bob has team access so this
-        # should work.
         self.client.login(username="bob@example.org", password="password")
-        r = self.client.get(url)
+        r = self.client.get(self.url)
         self.assertContains(r, "Assign Checks to Channel", status_code=200)
 
     def test_it_checks_owner(self):
         # channel does not belong to mallory so this should come back
         # with 403 Forbidden:
-        url = "/integrations/%s/checks/" % self.channel.code
         self.client.login(username="charlie@example.org", password="password")
-        r = self.client.get(url)
-        assert r.status_code == 403
+        r = self.client.get(self.url)
+        self.assertEqual(r.status_code, 403)
 
     def test_missing_channel(self):
         # Valid UUID but there is no channel for it:
@@ -40,4 +35,4 @@ class ChannelChecksTestCase(BaseTestCase):
 
         self.client.login(username="alice@example.org", password="password")
         r = self.client.get(url)
-        assert r.status_code == 404
+        self.assertEqual(r.status_code, 404)

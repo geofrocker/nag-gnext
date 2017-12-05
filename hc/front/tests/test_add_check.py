@@ -3,10 +3,13 @@ from hc.test import BaseTestCase
 
 
 class AddCheckTestCase(BaseTestCase):
-    def test_it_works(self):
-        url = "/checks/add/"
+    def setUp(self):
+        super(AddCheckTestCase, self).setUp()
         self.client.login(username="alice@example.org", password="password")
-        r = self.client.post(url)
+        self.url = "/checks/add/"
+
+    def test_it_works(self):
+        r = self.client.post(self.url)
         self.assertRedirects(r, "/checks/")
         assert Check.objects.count() == 1
 
@@ -15,18 +18,12 @@ class AddCheckTestCase(BaseTestCase):
          team where by one member has team_access.
         """
 
-        url = "/checks/add/"
-
-        self.client.login(username="alice@example.org", password="password")
         # creates an unnamed check on the Alice profile
-        resp = self.client.post(url)
+        resp = self.client.post(self.url)
         self.assertRedirects(resp, "/checks/")
         alice_checks = Check.objects.filter(user=self.alice)
         self.client.logout()  # destroy the current session
 
-        # Since Bob has team access, he should be able to access Alice's check
-        # However this check is not Bobs so we can't access it
-        # by querying Checks with user as Bob
         self.client.login(username="bob@example.org", password="password")
 
         resp = self.client.get("/checks/")
