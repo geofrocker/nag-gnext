@@ -36,7 +36,7 @@ class CheckTokenTestCase(BaseTestCase):
         self.profile.refresh_from_db()
         self.assertEqual(self.profile.token, "")
 
-    # Todo: Login and test it redirects already logged in
+    # Login and test it redirects already logged in
     def test_login_redirects_to_checks(self):
         """
             Test user is only redirected to checks only once they have
