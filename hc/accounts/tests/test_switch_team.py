@@ -24,8 +24,14 @@ class SwitchTeamTestCase(BaseTestCase):
 
         response = self.client.get(self.url, follow=True)
 
-        # Todo Assert the contents of response
+        # Assert the contents of response
         self.assertRedirects(response, reverse("hc-checks"))
+
+        # bob is on alice team therefore He should be able to see to alice checks.
+        self.assertIn(check, response.context['checks'])
+
+        # user in context should be bob.
+        self.assertEqual(response.context['user'], self.bob)
 
     def test_checks_team_membership(self):
         """
@@ -37,7 +43,7 @@ class SwitchTeamTestCase(BaseTestCase):
         self.client.login(username="charlie@example.org", password="password")
 
         response = self.client.get(self.url)
-        # Todo Assert the expected error code
+        # Assert the expected error code
         self.assertEqual(response.status_code, 403)
 
     def test_user_can_switch_to_own_team(self):
@@ -51,5 +57,10 @@ class SwitchTeamTestCase(BaseTestCase):
 
         response = self.client.get(self.url, follow=True)
 
-        # Todo Assert the expected error code
+        # Assert the expected error code
         self.assertNotEqual(response.status_code, 403)
+
+        self.client.login(username="charlie@example.org", password="password")
+        resp = self.client.get(self.url)
+        # Assert the expected error code
+        self.assertEqual(resp.status_code, 403)
