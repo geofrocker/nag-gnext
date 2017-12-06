@@ -13,9 +13,6 @@ env:
 addons:
   postgresql: "10.1"
 
-services:
-  - postgresql
-
 before_script:
   - psql -c 'create database hc;' -U postgres
 script:
