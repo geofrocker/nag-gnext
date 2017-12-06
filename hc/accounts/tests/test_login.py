@@ -11,12 +11,9 @@ class LoginTestCase(TestCase):
         self.url = reverse('hc-login')
         self.check = Check()
         self.form = {"email": "alice@example.org"}
-
-    def create_user(self):
-        """helper method to create user"""
         alice = User(username="alice", email="alice@example.org")
         alice.set_password("password")
-        alice.save()
+        self.alice = alice
 
     def test_it_sends_link(self):
         """
@@ -30,19 +27,19 @@ class LoginTestCase(TestCase):
         response = self.client.post(self.url, self.form)
         assert response.status_code == 302
 
-        # Todo Assert that a user was created
+        # Assert that a user was created
         self.assertEqual(User.objects.count(), 1)
 
         # And email sent
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, 'Log in to healthchecks.io')
 
-        # Todo Assert contents of the email body
+        # Assert contents of the email body
         created_user = User.objects.first()
         self.assertGreater(len(mail.outbox[0].body), 0)
         self.assertIn(created_user.username, mail.outbox[0].body)
 
-        # Todo Assert that check is associated with the new user
+        # Assert that check is associated with the new user
         check_user = Check.objects.first().user
         self.assertEqual(check_user.username, created_user.username)
 
@@ -54,8 +51,8 @@ class LoginTestCase(TestCase):
         self.client.session["bad_link"] = True
         self.client.get(self.url)
         assert "bad_link" not in self.client.session
-
-        # Todo Any other tests?
+        
+    # Any other tests?
     def test_login_returns_form_for_get(self):
         """
         Test rendered form is correct.
@@ -79,18 +76,14 @@ class LoginTestCase(TestCase):
         login credentials.
         """
         # create user
-        self.create_user()
+        self.alice.save()
         response = self.client.post(self.url, {
             "email": "alice@example.org",
             "password": "wrong-password"
             })
         # bad_credentials should be True in the context
-        self.assertTrue(response.context['bad_credentials'] is True)
+        self.assertTrue(response.context['bad_credentials'])
         self.assertContains(response, 'Incorrect email or password')
-
-        # assert no such user exists in the database at all.
-        with self.assertRaises(User.DoesNotExist):
-            User.objects.get(email="email@email.com")
 
     def test_login_link_cannot_be_used_twice(self):
         """
@@ -115,7 +108,7 @@ class LoginTestCase(TestCase):
             Test login with email and password supplied in EmailForm
         """
         # create user
-        self.create_user()
+        self.alice.save()
         # login with correct password
         response = self.client.post(
             self.url,
