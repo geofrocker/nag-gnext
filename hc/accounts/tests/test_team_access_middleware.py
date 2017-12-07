@@ -18,7 +18,6 @@ class TeamAccessMiddlewareTestCase(TestCase):
         r = self.client.get("/about/")
         self.assertEqual(r.status_code, 200)
 
-        # Todo Assert the new Profile objects count
         # delete user profile instance.
         user.profile.delete()
         prev_count = Profile.objects.count()
