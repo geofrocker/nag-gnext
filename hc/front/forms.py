@@ -7,14 +7,14 @@ class NameTagsForm(forms.Form):
     tags = forms.CharField(max_length=500, required=False)
 
     def clean_tags(self):
-        l = []
+        tags_list = []
 
         for part in self.cleaned_data["tags"].split(" "):
             part = part.strip()
             if part != "":
-                l.append(part)
+                tags_list.append(part)
 
-        return " ".join(l)
+        return " ".join(tags_list)
 
 
 class TimeoutForm(forms.Form):
