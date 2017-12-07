@@ -7,8 +7,14 @@ env:
   - DB=postgres
 addons:
   postgresql: "10.1"
+
+before_script:
+  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database hc;' -U postgres; fi"
+
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
   - pep8 --show-source --show-pep8 hc/
+
 after_success: coveralls
+
 cache: pip
