@@ -1,6 +1,7 @@
 from django.core.urlresolvers import reverse
 from hc.test import BaseTestCase
 
+
 class ApiKeyCase(BaseTestCase):
     def setUp(self):
         super(ApiKeyCase, self).setUp()
@@ -38,16 +39,3 @@ class ApiKeyCase(BaseTestCase):
 
         # API key should be empty.
         self.assertEqual(self.charlie.profile.api_key, "")
-
-"""
-Completed. 
-
-1. Email contents not checked.
-2. Dry (self.client.login(username="alice@example.org", password="password").
-3. Make a separate tests. (No need since it involves testing an inbuilt feature).
-4. Separated tests create and revoke api key.
-5. Fixed assert statement(assertTrue and assertEqual).
-6. Assert contents of the response.
-7. 
-
-"""

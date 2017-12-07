@@ -57,7 +57,6 @@ class CheckTokenTestCase(BaseTestCase):
         self.assertRedirects(response, reverse('hc-checks'))
         self.assertEqual(response.status_code, 302)
 
-    # Todo: Login with a bad token and check that it redirects
     def test_bad_token_redirects(self):
         """
             Test a user is redirected to login when they supply a wrong token.
@@ -69,5 +68,3 @@ class CheckTokenTestCase(BaseTestCase):
                                             args=('alice', 'bad_token')),
                                     follow=True)
         self.assertRedirects(response, reverse('hc-login'))
-
-    # Todo: Any other tests?
