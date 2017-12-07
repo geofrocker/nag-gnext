@@ -1,24 +1,19 @@
 language: python
 python:
-  - "2.7"
-  - "3.4"
   - "3.6"
 branches:
     only:
         - ch-tests-for-accounts-153114587
 install:
     - pip install -r requirements.txt
-    - pip install braintree coveralls mock mysqlclient
+    - pip install braintree coveralls mock
 env:
-  - DB=sqlite
-  - DB=mysql
   - DB=postgres
 addons:
   postgresql: "10.1"
 
 before_script:
   - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database hc;' -U postgres fi"
-  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -e 'create database hc; '; fi"
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
   - pep8 --show-source --show-pep8 . || exit 0
