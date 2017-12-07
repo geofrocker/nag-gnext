@@ -13,3 +13,5 @@ virtualenv
 venv
 .noseids
 .coverage
+hc_-venv/
+htmlcov/
