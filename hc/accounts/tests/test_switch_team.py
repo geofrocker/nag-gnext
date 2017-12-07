@@ -26,11 +26,7 @@ class SwitchTeamTestCase(BaseTestCase):
 
         # Assert the contents of response
         self.assertRedirects(response, reverse("hc-checks"))
-
-        # bob is on alice team therefore He should be able to see to alice checks.
         self.assertIn(check, response.context['checks'])
-
-        # user in context should be bob.
         self.assertEqual(response.context['user'], self.bob)
 
     def test_checks_team_membership(self):
