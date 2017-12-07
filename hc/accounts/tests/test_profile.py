@@ -85,7 +85,7 @@ class ProfileTestCase(BaseTestCase):
         # Assert the existence of the member emails
         self.assertGreater(len(member_emails), 0)
 
-        self.assertTrue("frank@example.org" in member_emails)
+        self.assertIn("frank@example.org", member_emails)
 
         # Assert that the email was sent and check email content
         # expected subject message.
