@@ -7,7 +7,7 @@ env:
   - DB=sqlite
 script:
   - coverage run --omit=*/tests/* --source=hc.front manage.py test
-  - pep8 --show-source --show-pep8 hc/
+  - pep8 --show-source --show-pep8 hc/front
 
 after_success: coveralls
 
