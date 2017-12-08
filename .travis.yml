@@ -3,13 +3,20 @@ python:
   - "3.6"
 
 install:
-    - pip install -r requirements.txt   
-env:
-  - DB=sqlite
+    - pip install -r requirements.txt
+    - pip install braintree coveralls mock
+services:
+  - postgres
+
+addons:
+  postgresql: "9.4"
+
+before_script:
+  - psql -c 'create database hc;' -U postgres
+  
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
-  - pep8 --show-source --show-pep8 hc/
-
+  - pep8 --show-source --show-pep8 .
 after_success: coveralls
 
 notifications:
@@ -18,3 +25,4 @@ notifications:
     on_failure: never
 
 cache: pip
+
