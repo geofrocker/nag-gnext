@@ -1,7 +1,6 @@
 language: python
 python:
   - "3.6"
-
 install:
     - pip install -r requirements.txt
     - pip install braintree coveralls mock
@@ -13,7 +12,6 @@ addons:
 
 before_script:
   - psql -c 'create database hc;' -U postgres
-  
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
   - pep8 --show-source --show-pep8 .
@@ -25,4 +23,3 @@ notifications:
     on_failure: never
 
 cache: pip
-
