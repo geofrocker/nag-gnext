@@ -17,6 +17,6 @@ before_script:
   - psql -c 'create database hc;' -U postgres
 script:
   - coverage run --omit=*/tests/* --source=hc manage.py test
-  - pep8 --show-source --show-pep8 . || exit 0
+  - pep8 --show-source --show-pep8 .
 after_success: coveralls
 cache: pip
