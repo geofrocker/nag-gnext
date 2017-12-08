@@ -4,13 +4,9 @@ python:
 install:
     - pip install -r requirements.txt   
 env:
-  - DB=postgres
-  - DB=sqlite3
-addons:
-  postgresql: "10.1"
-
+  - DB=sqlite
 script:
-  - coverage run --omit=*/tests/* --source=hc manage.py test
+  - coverage run --omit=*/tests/* --source=hc.front manage.py test
   - pep8 --show-source --show-pep8 hc/
 
 after_success: coveralls
