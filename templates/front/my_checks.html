@@ -116,6 +116,8 @@
             {% csrf_token %}
             <input type="hidden" name="timeout" id="update-timeout-timeout" />
             <input type="hidden" name="grace" id="update-timeout-grace" />
+            <input type="hidden" name="interval" id="update-timeout-interval"/>
+
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="update-timeout-info text-center">
@@ -131,6 +133,7 @@
                             1 day
                         </span>
                     </div>
+
                     <div id="period-slider"></div>
 
                     <div class="update-timeout-info text-center">
@@ -143,11 +146,28 @@
                         <span
                             id="grace-slider-value"
                             class="update-timeout-value">
+                            2 hours
+                        </span>
+                    </div> 
+                    
+                    <div id="grace-slider"></div>
+
+                    <div class="update-timeout-info text-center">
+                        <span
+                            class="update-timeout-label"
+                            data-toggle="tooltip"
+                            title="Set interval after which an email should be sent when a check is down">
+                            Interval
+                        </span>
+                        <span
+                            id="interval-slider-value"
+                            class="update-timeout-value">
                             1 day
                         </span>
                     </div>
 
-                    <div id="grace-slider"></div>
+                    <div id="interval-slider"></div>
+                    
 
                     <div class="update-timeout-terms">
                         <p>
@@ -157,6 +177,11 @@
                         <p>
                             <span>Grace Time</span>
                             When a check is late, how much time to wait until alert is sent.
+                        </p>
+
+                        <p>
+                            <span>Nag Interval</span>
+                            Set interval after which an email should be sent when a check is down
                         </p>
                     </div>
 

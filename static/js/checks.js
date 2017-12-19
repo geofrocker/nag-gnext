@@ -6,11 +6,11 @@ $(function () {
     var WEEK = {name: "week", nsecs: DAY.nsecs * 7};
     var UNITS = [WEEK, DAY, HOUR, MINUTE];
 
-    var secsToText = function(total) {
+    var secsToText = function (total) {
         var remainingSeconds = Math.floor(total);
         var result = "";
-        for (var i=0, unit; unit=UNITS[i]; i++) {
-            if (unit === WEEK && remainingSeconds % unit.nsecs != 0) {
+        for (var i = 0, unit; unit = UNITS[i]; i++) {
+            if (unit === WEEK && remainingSeconds % unit.nsecs !== 0) {
                 // Say "8 days" instead of "1 week 1 day"
                 continue
             }
@@ -18,7 +18,7 @@ $(function () {
             var count = Math.floor(remainingSeconds / unit.nsecs);
             remainingSeconds = remainingSeconds % unit.nsecs;
 
-            if (count == 1) {
+            if (count === 1) {
                 result += "1 " + unit.name + " ";
             }
 
@@ -28,7 +28,7 @@ $(function () {
         }
 
         return result;
-    }
+    };
 
     var periodSlider = document.getElementById("period-slider");
     noUiSlider.create(periodSlider, {
@@ -39,7 +39,7 @@ $(function () {
             '33%': [3600, 3600],
             '66%': [86400, 86400],
             '83%': [604800, 604800],
-            'max': 2592000,
+            'max': 2592000
         },
         pips: {
             mode: 'values',
@@ -47,12 +47,13 @@ $(function () {
             density: 4,
             format: {
                 to: secsToText,
-                from: function() {}
+                from: function () {
+                }
             }
         }
     });
 
-    periodSlider.noUiSlider.on("update", function(a, b, value) {
+    periodSlider.noUiSlider.on("update", function (a, b, value) {
         var rounded = Math.round(value);
         $("#period-slider-value").text(secsToText(rounded));
         $("#update-timeout-timeout").val(rounded);
@@ -68,7 +69,7 @@ $(function () {
             '33%': [3600, 3600],
             '66%': [86400, 86400],
             '83%': [604800, 604800],
-            'max': 2592000,
+            'max': 2592000
         },
         pips: {
             mode: 'values',
@@ -76,21 +77,50 @@ $(function () {
             density: 4,
             format: {
                 to: secsToText,
-                from: function() {}
+                from: function () {
+                }
             }
         }
     });
 
-    graceSlider.noUiSlider.on("update", function(a, b, value) {
+    graceSlider.noUiSlider.on("update", function (a, b, value) {
         var rounded = Math.round(value);
         $("#grace-slider-value").text(secsToText(rounded));
         $("#update-timeout-grace").val(rounded);
     });
 
+    var intervalSlider = document.getElementById("interval-slider");
+    noUiSlider.create(intervalSlider, {
+        start: [20],
+        connect: "lower",
+        range: {
+            'min': [60, 60],
+            '33%': [3600, 3600],
+            '66%': [86400, 86400],
+            '83%': [604800, 604800],
+            'max': 2592000
+        },
+        pips: {
+            mode: 'values',
+            values: [60, 1800, 3600, 43200, 86400, 604800, 2592000],
+            density: 4,
+            format: {
+                to: secsToText,
+                from: function () {
+                }
+            }
+        }
+    });
+
+    intervalSlider.noUiSlider.on("update", function (a, b, value) {
+        var rounded = Math.round(value);
+        $("#interval-slider-value").text(secsToText(rounded));
+        $("#update-timeout-interval").val(rounded);
+    });
 
     $('[data-toggle="tooltip"]').tooltip();
 
-    $(".my-checks-name").click(function() {
+    $(".my-checks-name").click(function () {
         var $this = $(this);
 
         $("#update-name-form").attr("action", $this.data("url"));
@@ -102,18 +132,19 @@ $(function () {
         return false;
     });
 
-    $(".timeout-grace").click(function() {
+    $(".timeout-grace").click(function () {
         var $this = $(this);
 
         $("#update-timeout-form").attr("action", $this.data("url"));
-        periodSlider.noUiSlider.set($this.data("timeout"))
-        graceSlider.noUiSlider.set($this.data("grace"))
-        $('#update-timeout-modal').modal({"show":true, "backdrop":"static"});
+        periodSlider.noUiSlider.set($this.data("timeout"));
+        graceSlider.noUiSlider.set($this.data("grace"));
+        intervalSlider.noUiSlider.set($this.data("interval"));
+        $('#update-timeout-modal').modal({"show": true, "backdrop": "static"});
 
         return false;
     });
 
-    $(".check-menu-remove").click(function() {
+    $(".check-menu-remove").click(function () {
         var $this = $(this);
 
         $("#remove-check-form").attr("action", $this.data("url"));
@@ -124,14 +155,14 @@ $(function () {
     });
 
 
-    $("#my-checks-tags button").click(function() {
+    $("#my-checks-tags button").click(function () {
         // .active has not been updated yet by bootstrap code,
         // so cannot use it
         $(this).toggleClass('checked');
 
         // Make a list of currently checked tags:
         var checked = [];
-        $("#my-checks-tags button.checked").each(function(index, el) {
+        $("#my-checks-tags button.checked").each(function (index, el) {
             checked.push(el.textContent);
         });
 
@@ -144,8 +175,8 @@ $(function () {
 
         function applyFilters(index, element) {
             var tags = $(".my-checks-name", element).data("tags").split(" ");
-            for (var i=0, tag; tag=checked[i]; i++) {
-                if (tags.indexOf(tag) == -1) {
+            for (var i = 0, tag; tag = checked[i]; i++) {
+                if (tags.indexOf(tag) === -1) {
                     $(element).hide();
                     return;
                 }
@@ -161,14 +192,14 @@ $(function () {
 
     });
 
-    $(".pause-check").click(function(e) {
+    $(".pause-check").click(function (e) {
         var url = e.target.getAttribute("data-url");
         $("#pause-form").attr("action", url).submit();
         return false;
     });
 
 
-    $(".usage-examples").click(function(e) {
+    $(".usage-examples").click(function (e) {
         var a = e.target;
         var url = a.getAttribute("data-url");
         var email = a.getAttribute("data-email");
@@ -182,18 +213,18 @@ $(function () {
 
 
     var clipboard = new Clipboard('button.copy-link');
-    $("button.copy-link").mouseout(function(e) {
-        setTimeout(function() {
+    $("button.copy-link").mouseout(function (e) {
+        setTimeout(function () {
             e.target.textContent = "copy";
         }, 300);
-    })
+    });
 
-    clipboard.on('success', function(e) {
+    clipboard.on('success', function (e) {
         e.trigger.textContent = "copied!";
         e.clearSelection();
     });
 
-    clipboard.on('error', function(e) {
+    clipboard.on('error', function (e) {
         var text = e.trigger.getAttribute("data-clipboard-text");
         prompt("Press Ctrl+C to select:", text)
     });
