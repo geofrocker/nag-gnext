@@ -21,7 +21,7 @@ STATUSES = (
 )
 DEFAULT_TIMEOUT = td(days=1)
 DEFAULT_GRACE = td(hours=1)
-DEFAULT_NAG = td(hours=2)
+DEFAULT_NAG = td(hours=1)
 
 CHANNEL_KINDS = (("email", "Email"), ("webhook", "Webhook"),
                  ("hipchat", "HipChat"),
@@ -55,6 +55,8 @@ class Check(models.Model):
     alert_after = models.DateTimeField(null=True, blank=True, editable=False)
     status = models.CharField(max_length=6, choices=STATUSES, default="new")
     interval = models.DurationField(default=DEFAULT_NAG)
+    nag_status = models.BooleanField(default=True)
+    nag_after = models.DateTimeField(null=True)
 
     def name_then_code(self):
         if self.name:
@@ -120,6 +122,7 @@ class Check(models.Model):
             "tags": self.tags,
             "timeout": int(self.timeout.total_seconds()),
             "grace": int(self.grace.total_seconds()),
+            "interval": int(self.nag_interval.total_seconds()),
             "n_pings": self.n_pings,
             "status": self.get_status()
         }
